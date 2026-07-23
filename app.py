@@ -2,6 +2,7 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import io
 import soundfile as sf
 from audio_recorder_streamlit import audio_recorder
 
@@ -29,7 +30,7 @@ st.markdown("""
         font-size: 22px;
         font-weight: bold;
     }
-    /* 사이드바 버튼 스타일 지정 */
+    /* 사이드바 버튼 스타일 */
     .stButton>button {
         text-align: left;
         border-radius: 6px;
@@ -81,7 +82,7 @@ if 'current_idx' not in st.session_state:
 # --- 📁 Sidebar: Script List View ---
 with st.sidebar:
     st.title("📋 Script List")
-    st.caption("Select or click a sentence below to jump to it.")
+    st.caption("Select or click a sentence below to jump directly to it.")
     
     # 1. Dropdown Selector
     selected_idx = st.selectbox(
@@ -97,16 +98,16 @@ with st.sidebar:
         
     st.markdown("---")
     
-    # 2. Clickable Sentence Buttons (클릭 가능한 버튼 목록)
+    # 2. Clickable Sentence Buttons
     st.markdown("**All Sentences Overview**")
     for i, sentence in enumerate(sentence_level1):
         short_text = sentence[:18] + "..." if len(sentence) > 18 else sentence
         
-        # 현재 선택된 대사는 활성화 상태(⭐)로 표시
+        # 현재 선택된 대사는 별표(⭐)와 함께 비활성화 상태 버튼으로 표시
         if i == st.session_state.current_idx:
             st.button(f"⭐ Q{i+1}. {short_text}", key=f"btn_{i}", disabled=True, use_container_width=True)
         else:
-            # 클릭 시 해당 대사 번호로 세션 상태 변경 후 새로고침
+            # 클릭 시 해당 문장 번호로 이동 후 화면 새로고침
             if st.button(f"Q{i+1}. {short_text}", key=f"btn_{i}", use_container_width=True):
                 st.session_state.current_idx = i
                 st.rerun()
@@ -153,6 +154,7 @@ with col_left:
     teacher_fs = 16000
     raw_audio_source = None
 
+    # Check file availability
     if os.path.exists(audio_path):
         st.audio(audio_path)
         raw_audio_source = audio_path
@@ -166,15 +168,21 @@ with col_left:
             st.audio(uploaded_t)
             raw_audio_source = uploaded_t
 
+    # Audio Decoding Safeguard
     if raw_audio_source is not None:
         try:
-            if hasattr(raw_audio_source, 'seek'): raw_audio_source.seek(0)
-            data, teacher_fs = sf.read(raw_audio_source)
+            if isinstance(raw_audio_source, str):
+                data, teacher_fs = sf.read(raw_audio_source)
+            else:
+                raw_audio_source.seek(0)
+                data, teacher_fs = sf.read(io.BytesIO(raw_audio_source.read()))
+            
             if len(data.shape) > 1: data = data[:, 0]
             teacher_audio = data.flatten()
-        except:
-            pass
+        except Exception as e:
+            st.error("Failed to decode teacher audio file.")
 
+    # Render Teacher Plot
     fig_t, ax_t = plt.subplots(figsize=(5, 3), facecolor='#1F2937')
     ax_t.set_facecolor('#111827')
     
@@ -196,13 +204,15 @@ with col_left:
         
     st.pyplot(fig_t)
 
+
 # --- 🎧 Right Column: User Audio (Student) ---
 with col_right:
     st.subheader("🎧 User Audio")
-    st.write("🎙️ Click the microphone icon to start recording.")
+    st.write("🎙️ 마이크 버튼을 눌러 직접 녹음하거나, 파일(.wav, .mp3)을 업로드하세요.")
     
+    # 1. 라이브 녹음
     student_audio_bytes = audio_recorder(
-        text="Click to Record/Stop",
+        text="Record / Stop",
         recording_color="#EF4444",
         neutral_color="#9CA3AF",
         pause_threshold=30.0
@@ -211,24 +221,35 @@ with col_right:
     student_audio = None
     student_fs = 16000
     
+    # 2. 파일 업로드
+    uploaded_s = st.file_uploader("Upload Audio File (Optional)", type=["wav", "mp3"], key="student_upload")
+    
+    # [우선순위 1] 녹음 데이터가 있는 경우
     if student_audio_bytes:
         st.audio(student_audio_bytes, format="audio/wav")
-        with open("temp_student.wav", "wb") as f:
-            f.write(student_audio_bytes)
-        data, student_fs = sf.read("temp_student.wav")
-        if len(data.shape) > 1: data = data[:, 0]
-        student_audio = data.flatten()
-    else:
-        uploaded_s = st.file_uploader("Upload Your Audio (Optional)", type=["wav", "mp3"], key="student_upload")
-        if uploaded_s:
-            data, student_fs = sf.read(uploaded_s)
+        try:
+            data, student_fs = sf.read(io.BytesIO(student_audio_bytes))
             if len(data.shape) > 1: data = data[:, 0]
             student_audio = data.flatten()
+        except Exception as e:
+            st.error("Failed to process recorded audio.")
 
+    # [우선순위 2] 파일이 업로드된 경우
+    elif uploaded_s is not None:
+        st.audio(uploaded_s)
+        try:
+            uploaded_s.seek(0)
+            data, student_fs = sf.read(io.BytesIO(uploaded_s.read()))
+            if len(data.shape) > 1: data = data[:, 0]
+            student_audio = data.flatten()
+        except Exception as e:
+            st.error("Failed to read uploaded audio file. (Supported formats: WAV, MP3)")
+
+    # Render Student Plot
     fig_s, ax_s = plt.subplots(figsize=(5, 3), facecolor='#1F2937')
     ax_s.set_facecolor('#111827')
     
-    if student_audio is not None:
+    if student_audio is not None and len(student_audio) > 0:
         s_times, s_pitches, s_ints = analyze_audio(student_audio, student_fs)
         ax_s.plot(s_times, s_pitches, color='#EF4444', linewidth=2)
         ax_s.set_ylabel("Pitch (Hz)", color='#EF4444')
@@ -241,7 +262,7 @@ with col_right:
         ax_s_int.set_ylim(0, 90)
         ax_s_int.tick_params(colors='#9CA3AF')
     else:
-        ax_s.text(0.5, 0.5, "Awaiting Recording...", color='#9CA3AF', ha='center', va='center')
+        ax_s.text(0.5, 0.5, "Awaiting Recording or Upload...", color='#9CA3AF', ha='center', va='center')
         ax_s.set_axis_off()
         
     st.pyplot(fig_s)
