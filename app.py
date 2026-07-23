@@ -208,7 +208,7 @@ with col_left:
 # --- 🎧 Right Column: User Audio (Student) ---
 with col_right:
     st.subheader("🎧 User Audio")
-    st.write("🎙️ 마이크 버튼을 눌러 직접 녹음하거나, 파일(.wav, .mp3)을 업로드하세요.")
+    st.write("🎙️ Record directly using the microphone button, or upload an audio file (.wav, .mp3).")
     
     # 1. 라이브 녹음
     student_audio_bytes = audio_recorder(
