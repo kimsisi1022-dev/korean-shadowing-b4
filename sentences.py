@@ -14,4 +14,8 @@ sentence_level1 = [
 "There are 5 seconds left to place your bet 베팅 5초 남았습니다 [betting o cho namatseumnida]",
 "Betting time has closed 배팅 시간 마감했습니다 [betting sigan magam haetseumnida]",
 "Betting is closed, and the game is about to begin 베팅 마감하고 게임 시작합니다 [betting magamhago game sijakamnida]",
-"Wishing you good luck 행운을 빌어요 [haenguneul bireoyo]",]
+"Wishing you good luck 행운을 빌어요 [haenguneul bireoyo]",
+"I will deal the card to the player 플레이어 카드 드리겠습니다 [player card deuriget seumnida]",
+"I will deal the card to the banker 뱅커 카드 드리겠습니다 [banker card deuriget seumnida]",
+"Player receives an extra card, then 플레이어 추가 카드 받고 [player chuga card bad ggo]", 
+"banker receives an extra card, then 뱅커 추가 카드 받고 [banker chuga card bad ggo]",  ]
