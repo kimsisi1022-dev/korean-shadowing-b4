@@ -18,4 +18,5 @@ sentence_level1 = [
 "I will deal the card to the player 플레이어 카드 드리겠습니다 [player card deuriget seumnida]",
 "I will deal the card to the banker 뱅커 카드 드리겠습니다 [banker card deuriget seumnida]",
 "Player receives an extra card, then 플레이어 추가 카드 받고 [player chuga card bad ggo]", 
-"banker receives an extra card, then 뱅커 추가 카드 받고 [banker chuga card bad ggo]",  ]
+"banker receives an extra card, then 뱅커 추가 카드 받고 [banker chuga card bad ggo]", 
+]
