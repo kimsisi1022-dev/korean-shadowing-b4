@@ -28,7 +28,7 @@ sentence_level1 = [
 "Congratulations to the winners 승리하신 분들 축하드립니다 [seungnihasin bundeul chukadeurimnida]", 
 "Congratulations on the player’s successful bet 플레이어 베팅 성공 축하드립니다 [player betting seonggong chukadeurimnida]",
 "Congratulations on the banker’s successful bet 뱅커 베팅 성공 축하드립니다 [banker betting seonggong chukadeurimnida]",
-"It is tie 타이입니다 [Tie imnida]",
+""It is tie 타이입니다 [Tie imnida]",
 "Congratulations on the tie’s successful bet 타이 베팅 성공 축하드립니다 [tie betting seonggong chukadeurimnida]",
 "The payout for tie bet is 8x 타이 배당은 8배 입니다 [Tie baedang eun yeodeol bbae imnida]",
 "Congratulations on side bet as well 사이드 베팅도 축하드립니다 [side betting do chuka deurimnida]",
