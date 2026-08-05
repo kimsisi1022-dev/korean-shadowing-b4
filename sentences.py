@@ -65,5 +65,5 @@ sentence_level1 = [
 "I burned 9 cards in total 총 9장 버닝했습니다 [chong ahop jang burning haedsseumnida]",  
 "I burned 10 cards in total 총 10장 버닝했습니다 [chong yeol jang burning haedsseumnida]",  
 "We’re changing the dealer 딜러 체인지합니다 [Dealer change hammida]",
-"Wish you luck with the pretty dealer (next dealer name) 예쁜 OO딜러와 행운을 빌어요 [yeppeun (oo) dealer wa Haenguneul bireoyo]",
+"Wish you luck with the pretty dealer (next dealer name) 예쁜 OO딜러와 행운을 빌어요 [yeppeun (oo) dealerwa Haenguneul bireoyo]",
 ]
