@@ -2,3 +2,4 @@ streamlit
 matplotlib
 soundfile
 audio-recorder-streamlit
+starlette<0.38.0
